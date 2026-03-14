@@ -73,7 +73,7 @@ export async function createUrl({title, longUrl, customUrl, user_id}, qrcode) {
   if (user_id === "guest") {
     // Cannot upload to supabase storage for guests without RLS issues easily,
     // so we mock the QR URL by generating it locally via a data URL later or using an external generator for placeholder.
-    qr = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(import.meta.env.VITE_APP_URL || window.location.origin + "/" + short_url)}`;
+    qr = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(import.meta.env.VITE_APP_URL_DOMAIN || window.location.origin + "/" + short_url)}`;
   } else {
     const {error: storageError} = await supabase.storage
       .from("qrs")

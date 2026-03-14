@@ -16,13 +16,13 @@ const LinkCard = ({ url = {}, fetchUrls }) => {
     if (!imageUrl) return;
 
     if (imageUrl.startsWith("data:")) {
-        const anchor = document.createElement("a");
-        anchor.href = imageUrl;
-        anchor.download = fileName;
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
-        return;
+      const anchor = document.createElement("a");
+      anchor.href = imageUrl;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      return;
     }
 
     fetch(imageUrl)
@@ -41,7 +41,7 @@ const LinkCard = ({ url = {}, fetchUrls }) => {
   };
 
   const { loading: loadingDelete, fn: fnDelete } = useFetch(deleteUrl, url.id);
-  const appUrl = import.meta.env.VITE_APP_URL || "https://shorturl.iamharsh.in";
+  const appUrl = import.meta.env.VITE_APP_URL;
   const shortLinkWithCustom = url?.custom_url ? url?.custom_url : url.short_url;
 
   const handleCopy = () => {
@@ -60,7 +60,7 @@ const LinkCard = ({ url = {}, fetchUrls }) => {
           />
         </div>
       )}
-      
+
       <div className="flex flex-col flex-1 min-w-0 space-y-2">
         <Link to={`/link/${url?.id}`} className="flex flex-col">
           <span className="text-2xl font-bold tracking-tight hover:text-primary hover:underline cursor-pointer truncate">
@@ -89,10 +89,10 @@ const LinkCard = ({ url = {}, fetchUrls }) => {
         >
           <Copy className="h-4 w-4" />
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="icon"
-          title="Download QR" 
+          title="Download QR"
           onClick={downloadImage}
         >
           <Download className="h-4 w-4" />
@@ -106,15 +106,19 @@ const LinkCard = ({ url = {}, fetchUrls }) => {
             toast.promise(
               fnDelete().then(() => fetchUrls()),
               {
-                loading: 'Deleting link...',
-                success: 'Link deleted successfully!',
-                error: 'Error deleting link'
-              }
-            )
+                loading: "Deleting link...",
+                success: "Link deleted successfully!",
+                error: "Error deleting link",
+              },
+            );
           }}
           disabled={loadingDelete}
         >
-          {loadingDelete ? <BeatLoader size={5} color="white" /> : <Trash className="h-4 w-4" />}
+          {loadingDelete ? (
+            <BeatLoader size={5} color="white" />
+          ) : (
+            <Trash className="h-4 w-4" />
+          )}
         </Button>
       </div>
     </Card>

@@ -56,7 +56,10 @@ export function CreateLink() {
     error,
     data,
     fn: fnCreateUrl,
-  } = useFetch(createUrl, { ...formValues, user_id: user?.id || (isGuest ? "guest" : null) });
+  } = useFetch(createUrl, {
+    ...formValues,
+    user_id: user?.id || (isGuest ? "guest" : null),
+  });
 
   useEffect(() => {
     if (error === null && data) {
@@ -118,7 +121,7 @@ export function CreateLink() {
         />
         {errors.longUrl && <Error message={errors.longUrl} />}
         <div className="flex items-center gap-2">
-          <Card className="p-2">shorturl.iamharsh.in</Card> /
+          <Card className="p-2">trimly.iamharsh.in</Card> /
           <Input
             id="customUrl"
             placeholder="Custom Link (optional)"

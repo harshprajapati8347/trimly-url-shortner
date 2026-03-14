@@ -17,7 +17,7 @@ const LinkPage = () => {
   const navigate = useNavigate();
   const { user, isGuest } = UrlState();
   const { id } = useParams();
-  
+
   const userId = user?.id || (isGuest ? "guest" : null);
 
   const {
@@ -51,26 +51,26 @@ const LinkPage = () => {
   if (url) {
     link = url?.custom_url ? url?.custom_url : url.short_url;
   }
-  const appUrl = import.meta.env.VITE_APP_URL || "https://shorturl.iamharsh.in";
+  const appUrl = import.meta.env.VITE_APP_URL || "https://trimly.iamharsh.in";
 
   const downloadImage = () => {
     const imageUrl = url?.qr;
     const fileName = url?.title;
-    
+
     // Check if it's base64/data URI or URL
     if (imageUrl.startsWith("data:")) {
-        const anchor = document.createElement("a");
-        anchor.href = imageUrl;
-        anchor.download = fileName;
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
-        return;
+      const anchor = document.createElement("a");
+      anchor.href = imageUrl;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      return;
     }
 
     fetch(imageUrl)
-      .then(response => response.blob())
-      .then(blob => {
+      .then((response) => response.blob())
+      .then((blob) => {
         const blobUrl = window.URL.createObjectURL(blob);
         const anchor = document.createElement("a");
         anchor.href = blobUrl;
@@ -114,7 +114,8 @@ const LinkPage = () => {
             {url?.original_url}
           </a>
           <span className="flex items-end font-light text-sm text-muted-foreground">
-            Created on {url?.created_at && new Date(url?.created_at).toLocaleString()}
+            Created on{" "}
+            {url?.created_at && new Date(url?.created_at).toLocaleString()}
           </span>
           <div className="flex gap-2 w-full mt-2">
             <Button
@@ -124,7 +125,11 @@ const LinkPage = () => {
             >
               <Copy className="h-4 w-4 mr-2" /> Copy
             </Button>
-            <Button variant="outline" onClick={downloadImage} className="flex-1 sm:flex-none">
+            <Button
+              variant="outline"
+              onClick={downloadImage}
+              className="flex-1 sm:flex-none"
+            >
               <Download className="h-4 w-4 mr-2" /> QR
             </Button>
             <Button
@@ -135,11 +140,11 @@ const LinkPage = () => {
                     navigate("/dashboard");
                   }),
                   {
-                    loading: 'Deleting link...',
-                    success: 'Link deleted successfully!',
-                    error: 'Error deleting link'
-                  }
-                )
+                    loading: "Deleting link...",
+                    success: "Link deleted successfully!",
+                    error: "Error deleting link",
+                  },
+                );
               }}
               disabled={loadingDelete}
             >
@@ -150,10 +155,10 @@ const LinkPage = () => {
               )}
             </Button>
           </div>
-          
+
           {url?.qr && (
             <Card className="w-full sm:w-auto p-4 overflow-hidden flex items-center justify-center bg-white mt-4">
-               <img
+              <img
                 src={url?.qr}
                 className="w-full max-w-[250px] object-contain"
                 alt="qr code"
@@ -165,7 +170,9 @@ const LinkPage = () => {
         <div className="sm:w-3/5 flex flex-col gap-6">
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle className="text-3xl font-extrabold">Analytics</CardTitle>
+              <CardTitle className="text-3xl font-extrabold">
+                Analytics
+              </CardTitle>
             </CardHeader>
             {stats && stats.length > 0 ? (
               <CardContent className="flex flex-col gap-6">
@@ -179,12 +186,12 @@ const LinkPage = () => {
                 </Card>
 
                 <div>
-                   <h3 className="text-lg font-semibold mb-4">Location Data</h3>
-                   <Location stats={stats} />
+                  <h3 className="text-lg font-semibold mb-4">Location Data</h3>
+                  <Location stats={stats} />
                 </div>
                 <div>
-                   <h3 className="text-lg font-semibold mb-4">Device Info</h3>
-                   <DeviceStats stats={stats} />
+                  <h3 className="text-lg font-semibold mb-4">Device Info</h3>
+                  <DeviceStats stats={stats} />
                 </div>
               </CardContent>
             ) : (
