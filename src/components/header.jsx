@@ -9,7 +9,7 @@ import {
 import { logout } from "@/db/apiAuth";
 import useFetch from "@/hooks/use-fetch";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { LinkIcon, LogOut, User } from "lucide-react";
+import { LinkIcon, LogOut, User, Link2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 import { Button } from "./ui/button";
@@ -39,13 +39,10 @@ const Header = () => {
         <nav className="flex h-16 items-center justify-between">
           <Link
             to="/"
-            className="flex items-center space-x-2 transition-opacity hover:opacity-80"
+            className="flex items-center gap-2 transition-transform hover:scale-105 hover:text-primary text-foreground"
           >
-            <img
-              src="/logo.png"
-              className="h-8 md:h-12 dark:invert"
-              alt="Trimly Logo"
-            />
+            <Link2 className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="text-xl md:text-2xl font-bold">Trimly</span>
           </Link>
 
           <div className="flex items-center gap-2 md:gap-4">
@@ -65,7 +62,7 @@ const Header = () => {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full"
+                    className="relative h-15 w-15 rounded-full"
                   >
                     {isGuest ? (
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted border">
@@ -73,7 +70,10 @@ const Header = () => {
                       </div>
                     ) : (
                       <Avatar className="h-10 w-10 border rounded-full overflow-hidden">
-                        <AvatarImage src={user?.user_metadata?.profile_pic} />
+                        <AvatarImage
+                          src={user?.user_metadata?.profile_pic}
+                          className="h-full w-full object-cover"
+                        />
                         <AvatarFallback className="flex h-full w-full items-center justify-center bg-muted">
                           {user?.user_metadata?.name?.charAt(0) || "U"}
                         </AvatarFallback>
