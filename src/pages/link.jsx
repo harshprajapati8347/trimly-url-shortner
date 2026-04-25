@@ -101,7 +101,7 @@ const LinkPage = () => {
           <a
             href={`${appUrl}/${link}`}
             target="_blank"
-            className="text-2xl sm:text-3xl text-primary font-bold hover:underline cursor-pointer"
+            className="text-lg sm:text-3xl text-primary font-bold hover:underline cursor-pointer break-all"
           >
             {appUrl}/{link}
           </a>
