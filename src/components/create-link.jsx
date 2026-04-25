@@ -64,12 +64,14 @@ export function CreateLink() {
   useEffect(() => {
     if (error === null && data) {
       navigate(`/link/${data[0].id}`);
+    } else if (error) {
+      setErrors({ ...errors, message: error.message });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, data]);
 
   const createNewLink = async () => {
-    setErrors([]);
+    setErrors({});
     try {
       await schema.validate(formValues, { abortEarly: false });
 

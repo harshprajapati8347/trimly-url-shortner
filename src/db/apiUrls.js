@@ -110,8 +110,8 @@ export async function createUrl({title, longUrl, customUrl, user_id}, qrcode) {
     .select();
 
   if (error) {
-    console.error(error);
-    throw new Error("Error creating short URL");
+    console.error(error.message);
+    throw new Error(error.message);
   }
 
   return data;
