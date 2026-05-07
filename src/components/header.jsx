@@ -16,11 +16,13 @@ import { Button } from "./ui/button";
 import { UrlState } from "@/context";
 import { ThemeToggle } from "./theme-toggle";
 import { PageContainer } from "./layout/page-container";
+import { useTheme } from "@/components/theme-provider";
 
 const Header = () => {
   const navigate = useNavigate();
   const { user, fetchUser, setGuestSession, isGuest } = UrlState();
   const { loading, fn: fnLogout } = useFetch(logout);
+  const { theme } = useTheme();
 
   const handleLogout = async () => {
     if (isGuest) {
@@ -41,7 +43,20 @@ const Header = () => {
             to="/"
             className="flex items-center gap-2 transition-transform hover:scale-105 hover:text-primary text-foreground"
           >
-            <Link2 className="h-5 w-5 md:h-6 md:w-6" />
+            {/* <Link2 className="h-5 w-5 md:h-6 md:w-6" /> */}
+            {theme === "dark" ? (
+              <img
+                src="/trimly_dark.png"
+                alt="logo"
+                className="h-12 w-12 md:h-14 md:w-14"
+              />
+            ) : (
+              <img
+                src="/trimly_light.png"
+                alt="logo"
+                className="h-12 w-12 md:h-14 md:w-14"
+              />
+            )}
             <span className="text-xl md:text-2xl font-bold">Trimly</span>
           </Link>
 
