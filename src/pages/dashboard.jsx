@@ -1,27 +1,27 @@
-import {useEffect, useState} from "react";
-import {BarLoader} from "react-spinners";
-import {Filter, Link2} from "lucide-react";
+import { useEffect, useState } from "react";
+import { BarLoader } from "react-spinners";
+import { Filter, Link2 } from "lucide-react";
 
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {CreateLink} from "@/components/create-link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { CreateLink } from "@/components/create-link";
 import LinkCard from "@/components/link-card";
 import Error from "@/components/error";
-import {PageContainer} from "@/components/layout/page-container";
-import {EmptyState} from "@/components/ui/empty-state";
+import { PageContainer } from "@/components/layout/page-container";
+import { EmptyState } from "@/components/ui/empty-state";
 
 import useFetch from "@/hooks/use-fetch";
 
-import {getUrls} from "@/db/apiUrls";
-import {getClicksForUrls} from "@/db/apiClicks";
-import {UrlState} from "@/context";
+import { getUrls } from "@/db/apiUrls";
+import { getClicksForUrls } from "@/db/apiClicks";
+import { UrlState } from "@/context";
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const {user, isGuest} = UrlState();
+  const { user, isGuest } = UrlState();
   const userId = user?.id || (isGuest ? "guest" : null);
 
-  const {loading, error, data: urls, fn: fnUrls} = useFetch(getUrls, userId);
+  const { loading, error, data: urls, fn: fnUrls } = useFetch(getUrls, userId);
   const {
     loading: loadingClicks,
     data: clicks,
@@ -71,7 +71,7 @@ const Dashboard = () => {
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">My Links</h1>
         <CreateLink />
       </div>
-      
+
       {urls?.length > 0 ? (
         <div className="relative">
           <Input
@@ -85,20 +85,20 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="mt-8">
-          <EmptyState 
-            icon={Link2} 
-            title="No links created yet" 
+          <EmptyState
+            icon={Link2}
+            title="No links created yet"
             description={
-              isGuest 
-              ? "You're browsing as a guest. Your links will be temporarily saved." 
-              : "Create your first shortened URL to start tracking analytics."
-            } 
+              isGuest
+                ? "You're browsing as a guest. Your links will be temporarily saved."
+                : "Create your first shortened URL to start tracking analytics."
+            }
           />
         </div>
       )}
 
       {error && <Error message={error?.message} />}
-      
+
       <div className="space-y-4">
         {(filteredUrls || []).map((url, i) => (
           <LinkCard key={`link-${i}-${url.id}`} url={url} fetchUrls={fnUrls} />

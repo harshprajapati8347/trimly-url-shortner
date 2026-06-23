@@ -1,5 +1,5 @@
 import "./App.css";
-import {RouterProvider, createBrowserRouter} from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import UrlProvider from "./context";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "sonner";

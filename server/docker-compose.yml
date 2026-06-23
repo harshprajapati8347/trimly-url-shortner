@@ -1,0 +1,20 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: trimly-redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_URL=redis://localhost:6379
+    command: [ "redis-server", "--appendonly", "yes" ]
+    volumes:
+      - redis-data:/data
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: trimly-redis-insight
+    ports:
+      - "5540:5540"
+    restart: unless-stopped
+volumes:
+  redis-data:
+
