@@ -1,182 +1,162 @@
 # Trimly
 
-A modern **URL Shortener with Analytics** built using **React, shadcn/ui, and Supabase**.
+A modern **URL Shortener with Analytics**, built as a **Next.js 14 (App Router)
+full-stack** application — **Next.js itself is the backend** (Route Handlers,
+Server Actions, Middleware). No separate Node/Express server.
 
-Trimly allows users to create short URLs, track clicks, and view link performance through a clean dashboard.
-
-This project was built to explore **modern React UI patterns, Supabase BaaS, and shadcn component design**.
-
----
-
-## ✨ Features
-
-- 🔗 Shorten long URLs instantly
-- 📊 Link analytics with Recharts
-- 👤 Authentication with Supabase
-- 👥 **Guest Mode** (try without signup)
-- 🌓 Light / Dark / System theme
-- 🍪 Cookie consent management
-- 🔔 Toast notifications
-- 📱 Fully responsive UI
-- 🎨 Clean SaaS-style UI with shadcn
-- 🪝 Custom Hook - useFetch & Context API - UrlProvider
+Trimly lets you create short URLs, track clicks, and view link performance
+through a clean dashboard — with a Redis-backed redirect cache and rate limiting.
 
 ---
 
-## 🧰 Tech Stack
+## Features
 
-Frontend
-
-- React
-- Vite
-- TailwindCSS
-- shadcn/ui
-- Recharts
-
-Backend
-
-- Supabase (Auth + Database)
-
-Utilities
-
-- Lucide Icons
-- Sonner Toast
-- Yup Validation
+- Shorten long URLs instantly
+- Link analytics with Recharts (clicks, device, location)
+- Authentication via Supabase (`@supabase/ssr`, cookie-based)
+- **Guest Mode** (try without signup — data stays in your browser)
+- Light / Dark / System theme (`next-themes`, no flash)
+- Cookie consent management
+- Toast notifications (Sonner)
+- Fully responsive shadcn/ui interface
+- **Redis-backed redirect cache** + **rate limiting** (Upstash)
+- Async, non-blocking click-analytics pipeline
 
 ---
 
-## 📂 Project Structure
+## Tech Stack
+
+**Framework:** Next.js 14 (App Router) · TypeScript
+**UI:** Tailwind CSS · shadcn/ui · Recharts · Lucide
+**Backend (all in Next.js):** Route Handlers · Server Actions · Middleware
+**Data:** Supabase (Postgres + Auth + Storage)
+**Cache / Rate limit:** Upstash Redis + `@upstash/ratelimit`
+**Validation:** Zod (+ react-hook-form)
+
+---
+
+## Project structure
 
 ```
+app/
+├─ layout.tsx                # root layout: theme, header/footer, toaster
+├─ globals.css
+├─ not-found.tsx
+├─ (marketing)/              # /, /privacy, /terms
+├─ (auth)/auth/              # /auth (login / signup / guest)
+├─ (dashboard)/              # protected: /dashboard, /link/[id] (+ loading/error)
+├─ [slug]/                   # guest-mode redirect fallback (client)
+└─ api/
+   ├─ track/route.ts         # async click ingestion
+   └─ urls/route.ts          # REST create/list
 
-src/
-├─ components/
-│   ├─ ui/           # shadcn UI components
-│   ├─ layout/       # layout components
-│   └─ feature components
-│
-├─ pages/            # route pages
-├─ db/               # Supabase API logic
-├─ hooks/            # custom hooks
-├─ contexts/         # global state
-└─ layouts/          # app layout
-
+components/                  # ui/ (shadcn) + feature/layout components
+lib/
+├─ supabase/{client,server,admin,middleware}.ts
+├─ actions/urls.ts           # Server Actions (create/delete)
+├─ data/urls.ts              # server-only reads
+├─ redis.ts · ratelimit.ts · links.ts
+├─ validations.ts (Zod) · types.ts · constants.ts
+hooks/use-guest.ts
+middleware.ts                # session refresh + redirect + rate limit
+docs/ARCHITECTURE.md         # caching & backend design notes
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting started
 
-### 1. Fork / Clone the Repository
-
-```bash
-git clone https://github.com/harshprajapati8347/Trimly-URL-Shortner.git
-cd Trimly-URL-Shortner
-```
-
-### 2. Install Dependencies
+### 1. Install
 
 ```bash
 npm install
 ```
 
-### 3. Setup Environment Variables
+### 2. Environment variables
 
-Create `.env` file:
+Copy `.env.example` to `.env.local` and fill in the values:
 
 ```
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Supabase — Dashboard → Project Settings → API
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=        # server-only secret
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Upstash Redis — https://console.upstash.com → Redis → REST API
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
-You can create a project at:
+| Variable | Where to get it |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API → `service_role` (keep secret!) |
+| `NEXT_PUBLIC_APP_URL` | Your base URL (`http://localhost:3000` in dev) |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Console → your DB → REST API |
 
-[https://supabase.com](https://supabase.com)
+> Redis is optional in dev: without it, caching and rate limiting **fail open**
+> and the app still runs (redirects hit Supabase directly).
 
-### 4. Run Development Server
+### 3. Database
+
+Trimly expects two Supabase tables and two Storage buckets:
+
+- `urls(id, title, user_id, original_url, custom_url, short_url, qr, created_at)`
+- `clicks(id, url_id, city, country, device, created_at)`
+- Storage buckets: `profile_pic` (public), `qrs` (legacy — QRs now use an external generator)
+
+Add RLS policies so users can only read/write their own `urls` (and the
+`clicks` for those urls). The server uses the **service role** only for public
+redirect resolution and anonymous click writes.
+
+### 4. Run
 
 ```bash
-npm run dev
-```
-
-App will run at:
-
-```
-http://localhost:5173
+npm run dev      # http://localhost:3000
+npm run build    # production build
+npm run start    # serve the production build
+npm run lint
 ```
 
 ---
 
-## 🧪 Guest Mode
+## Guest Mode
 
-Trimly supports **Guest Access**.
-
-Users can:
-
-- create short links
-- test analytics
-
-Guest data is stored locally and not persisted across devices.
+Anonymous users can create and test links without signing up. Guest links and
+clicks are stored **only in `localStorage`** (never sent to Supabase). A cookie
+(`trimly_guest`) marks the guest session so the server-side route guard lets
+guests into the dashboard. Guest slug redirects are resolved client-side in
+`app/[slug]/page.tsx` (the server-side middleware only knows about DB links).
 
 ---
 
-## 🎨 UI Outlook
+## Backend / Redis / rate-limiting learning notes
 
-Best Practices of UI Design
+See **[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)** for the full write-up:
 
-- Consistent layout system
-- Reusable page containers
-- Unified spacing and typography
-- Modern dashboard cards
-- Mobile responsiveness
-- Empty states and loading feedback
-- Auth and Guest Mode
-
----
-
-## 📊 Analytics
-
-Trimly tracks:
-
-- total clicks
-- device statistics
-- link performance
-
-Charts are rendered using **Recharts**.
+- **Redis read-through cache** for slug → destination lookups (fast redirects).
+- **Rate limiting** (`@upstash/ratelimit`) on create (per-user + per-IP) and
+  redirect (per-IP), returning `429` + `Retry-After`.
+- **Async click pipeline** via `fetch(..., { keepalive: true })` from middleware
+  to `/api/track` (with a note on `after()` and queues for the future).
+- **Caching invalidation** rules for create/update/delete.
+- `TODO(next-learning)` markers for queues, realtime, edge functions, and
+  observability.
 
 ---
 
-## 🔒 Privacy
+## Privacy
 
-Trimly collects **limited device and location information for link analytics**. Please see our [Privacy Policy](/src/pages/privacy.jsx) for details on how this minimal data is stored and utilized.
-
----
-
-<!--
-## 🤝 Contributing
-
-Contributions are welcome.
-
-Steps:
-
-1. Fork the repository
-2. Create a new branch
-3. Make your changes
-4. Open a Pull Request
+Trimly collects limited device and approximate-location data for link
+analytics. See the in-app [Privacy Policy](/privacy).
 
 ---
 
-## 📄 License
+## Project purpose
 
-MIT License
-
---- -->
-
-## 💡 Project Purpose
-
-Trimly is a **learning-focused open source project** exploring:
-
-- shadcn UI design patterns
-- Supabase as backend
-- modern React architecture
-- building simple SaaS-style tools
+A learning-focused project exploring **Next.js App Router full-stack patterns**,
+**Supabase SSR auth**, and **serverless Redis (Upstash) caching + rate limiting**
+— all without a standalone backend server.
