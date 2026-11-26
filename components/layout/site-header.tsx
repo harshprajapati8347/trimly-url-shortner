@@ -48,8 +48,8 @@ export function SiteHeader({ user }: { user: AuthUser | null }) {
     router.push("/");
     router.refresh();
   };
-
-  const logoSrc = resolvedTheme === "dark" ? "/trimly_dark.png" : "/trimly_light.png";
+  const logoSrc = "/trimly_dark.png";
+  // const logoSrc = resolvedTheme === "dark" ? "/trimly_dark.png" : "/trimly_light.png";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
