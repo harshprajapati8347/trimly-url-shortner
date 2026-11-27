@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CookieSettingsLink } from "@/components/consent/cookie-settings-link";
 import { PageContainer } from "@/components/layout/page-container";
 
 /** Site footer (server component — no interactivity). */
@@ -20,7 +19,6 @@ export function AppFooter() {
             </a>
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <CookieSettingsLink />
             <Link
               href="/privacy"
               className="hover:text-primary transition-colors underline underline-offset-4"
